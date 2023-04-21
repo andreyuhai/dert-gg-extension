@@ -1,4 +1,4 @@
-# <img src="public/icons/icon_48.png" width="45" align="left"> dert.gg
+# <img src="public/icons/droplet_64.png" width="45" align="left"> dert.gg
 
 ## Fantastik dertler nelerdir, nasıl sikilirler?
 
