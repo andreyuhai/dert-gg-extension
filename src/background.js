@@ -21,7 +21,7 @@ const AUTHENTICATED_ICONSET = {
   "512": "icons/droplet_512.png"
 };
 
-Sentry.init({dsn: "<SENTRY_DSN"})
+Sentry.init({dsn: "<SENTRY_DSN>"})
 
 
 const WEBSOCKET_URL = "ws://localhost:4000/socket";
