@@ -21,13 +21,14 @@
   },
   "permissions": [
     "storage",
-    "tabs"
+    "tabs",
+    "scripting"
   ],
   "content_scripts": [
     {
       "matches": [
-	"https://eksisozluk.com/*",
-	"https://eksisozluk2023.com/*"
+	"*://eksisozluk.com/*",
+	"*://eksisozluk2023.com/*"
       ],
       "exclude_matches": [
 	"*://eksisozluk.com/",
@@ -46,5 +47,14 @@
   ],
   "externally_connectable": {
     "matches": ["https://wild-frog-7798.fly.dev/*", "http://localhost:4000/*"]
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["message_handler.js"],
+      "matches": [
+	"*://eksisozluk.com/*",
+	"*://eksisozluk2023.com/*"
+      ]
+    }
+  ]
 }
