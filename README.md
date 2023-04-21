@@ -1,19 +1,8 @@
-# <img src="public/icons/icon_48.png" width="45" align="left"> Dert Gg
+# <img src="public/icons/icon_48.png" width="45" align="left"> dert.gg
 
-My Chrome Extension
+## Fantastik dertler nelerdir, nasıl sikilirler?
 
-## Features
-
-- Feature 1
-- Feature 2
-
-## Install
-
-[**Chrome** extension]() <!-- TODO: Add chrome extension link inside parenthesis -->
-
-## Contribution
-
-Suggestions and pull requests are welcomed!.
+eksisozluk.com için bir Chrome eklentisi.
 
 ---
 

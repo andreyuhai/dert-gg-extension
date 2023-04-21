@@ -1,33 +1,50 @@
 {
   "manifest_version": 3,
-  "name": "Dert Gg",
-  "version": "0.1.0",
-  "description": "My Chrome Extension",
+  "name": "dert.gg",
+  "version": "0.2.0",
+  "description": "kutsal dert kaynağı",
   "icons": {
-    "16": "icons/icon_16.png",
-    "32": "icons/icon_32.png",
-    "48": "icons/icon_48.png",
-    "128": "icons/icon_128.png"
+    "16": "icons/droplet_unauthenticated_16.png",
+    "24": "icons/droplet_unauthenticated_24.png",
+    "32": "icons/droplet_unauthenticated_32.png",
+    "64": "icons/droplet_unauthenticated_64.png",
+    "128": "icons/droplet_unauthenticated_128.png",
+    "256": "icons/droplet_unauthenticated_256.png",
+    "512": "icons/droplet_unauthenticated_512.png"
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
-    "default_title": "Dert Gg",
-    "default_popup": "popup.html"
+    "default_title": "dert.gg"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "tabs"
   ],
   "content_scripts": [
     {
       "matches": [
-        "<all_urls>"
+	"https://eksisozluk.com/*",
+	"https://eksisozluk2023.com/*"
       ],
-      "run_at": "document_idle",
-      "js": [
-        "contentScript.js"
-      ]
+      "exclude_matches": [
+	"*://eksisozluk.com/",
+	"*://eksisozluk.com/biri/*",
+	"*://eksisozluk.com/entry/*",
+	"*://eksisozluk.com/basliklar/*",
+	"*://eksisozluk.com/mesaj/*",
+	"*://eksisozluk2023.com/",
+	"*://eksisozluk2023.com/biri/*",
+	"*://eksisozluk2023.com/entry/*",
+	"*://eksisozluk2023.com/basliklar/*",
+	"*://eksisozluk2023.com/mesaj/*"
+      ],
+      "js": ["contentScript.js"]
     }
-  ]
+  ],
+  "externally_connectable": {
+    "matches": ["https://wild-frog-7798.fly.dev/*", "http://localhost:4000/*"]
+  }
 }
