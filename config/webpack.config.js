@@ -9,7 +9,11 @@ const PATHS = require('./paths');
 const config = (env, argv) =>
   merge(common, {
     entry: {
-      contentScript: [PATHS.src + '/dert_gg_button.js', PATHS.src + '/socket.js'],
+      message_handler: PATHS.src + '/message_handler.js',
+      contentScript: [
+	PATHS.src + '/dert_gg_button.js',
+	PATHS.src + '/socket.js'
+      ],
       background: PATHS.src + '/background.js',
     },
     devtool: argv.mode === 'production' ? false : 'source-map',
