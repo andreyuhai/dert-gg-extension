@@ -1,6 +1,6 @@
 # <img src="public/icons/droplet_64.png" width="45" align="left"> dert.gg
 
-## Fantastik dertler nelerdir, nasıl sikilirler?
+### Fantastik dertler nelerdir, nasıl sikilirler?
 
 eksisozluk.com için bir Chrome eklentisi.
 
