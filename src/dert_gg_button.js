@@ -1,10 +1,10 @@
 import * as Sentry from "@sentry/browser";
 
-Sentry.init({dsn: "<SENTRY_DSN>"})
+Sentry.init({dsn: "https://3a084044227b4732a8fbe0fbdf5d18c4@o1275978.ingest.sentry.io/4505031335149568"})
 
 // Get the subtopic from the URL and construct the topic(topic:subtopic)
 // Topic is constant and defined in the backend
-function constructTopic() {
+function construct_topic() {
   let url = document.URL
   let subtopic = url.match(/--(\d+)/)
 
@@ -16,14 +16,37 @@ function click_handler() {
   let entry_item = this.closest('li');
   let entry_id = entry_item.getAttribute('data-id');
   let dert_gg_count = this.nextElementSibling;
+  let err_msg;
+
+  if (!['upvote', 'unvote'].includes(action)) {
+    notify('Hiçbir şey olmamış ise kesinlikle bir şeyler oldu. Yakında hallederiz.', 'error')
+    return;
+  }
+
+  switch (action) {
+    case 'upvote':
+      err_msg = "Bu fantastik derdi sikebilmek için önce dert.gg'ye giriş yapmalısın.";
+      break;
+    case 'unvote':
+      err_msg = "Sikilen dertler geri alınmaz. Önce dert";
+      break;
+  }
 
   if (topic && entry_id) {
     chrome.runtime.sendMessage({type: action, entryId: entry_id, topic: topic}, (resp) => {
       if (resp == 'unauthorized') {
-	alert("Hoop! Bu fantastik derdi sikebilmek için önce dert.gg'ye giriş yapmalısın.");
+	notify(err_msg, 'error')
+      } else if (resp == 'timeout') {
+	// in case there's a problem on the server side and we timeout
+	notify('Hiçbir şey olmamış ise kesinlikle bir şeyler oldu. Yakında hallederiz.', 'error')
       }
     });
   }
+};
+
+// Send events
+function notify(msg, category) {
+  window.postMessage({type: 'dert_gg', msg: msg, category: category}, '*');
 };
 
 function create_dert_gg_button() {
@@ -65,5 +88,16 @@ function append_dert_gg() {
   });
 };
 
-let topic = constructTopic();
+// This let's us inject a script which will be listening to our
+// own notification messages so that we can use eksisozluk's own ek$i.addResponse
+// to show users eksi native™ notifications.
+function inject_message_listener() {
+  var s = document.createElement('script');
+  s.src = chrome.runtime.getURL('message_handler.js');
+  (document.head||document.documentElement).appendChild(s);
+};
+
+let topic = construct_topic();
+
 append_dert_gg();
+inject_message_listener();
