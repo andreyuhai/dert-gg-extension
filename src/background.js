@@ -148,7 +148,8 @@ function upvote(entry_id, topic, sendResponse) {
 
   channel?.push("upvote", {entry_id: entry_id, jwt: jwt})
     .receive("ok", () => { dispatch_successful_upvote_to_tabs(channel, entry_id) })
-    .receive("unauthorized", () => { sendResponse("unauthorized") })
+    .receive("unauthorized", () => { sendResponse("unauthorized"); handle_unauthorized() })
+    .receive("timeout", () => { sendResponse("timeout") })
 }
 
 function unvote(entry_id, topic, sendResponse) {
@@ -162,7 +163,8 @@ function unvote(entry_id, topic, sendResponse) {
 
   channel?.push("unvote", {entry_id: entry_id, jwt: jwt})
     .receive("ok", () => { dispatch_successful_unvote_to_tabs(channel, entry_id) })
-    .receive("unauthorized", () => { sendResponse("unauthorized") })
+    .receive("unauthorized", () => { sendResponse("unauthorized"); handle_unauthorized() })
+    .receive("timeout", () => { sendResponse("timeout") })
 }
 
 // Once we get an event from the web app, we need to push those events
@@ -203,10 +205,16 @@ function get_topic_id(channel) {
   return channel.topic.split(":")[1];
 }
 
+// When we know that the user actually is unauthorized
+function handle_unauthorized() {
+  jwt = undefined;
+  chrome.action.setIcon({path: UNAUTHENTICATED_ICONSET});
+}
+
 /******************** POPUP ONCLICK LISTENER ********************/
 
 chrome.action.onClicked.addListener(() => {
-  chrome.storage.local.get("token", ({token}) => {
+  chrome.storage.local.get("jwt", ({jwt}) => {
     if (token)
       chrome.tabs.create({url: "https://dert.gg"})
     else
