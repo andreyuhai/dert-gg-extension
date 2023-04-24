@@ -36,17 +36,19 @@
 	"*://eksisozluk.com/entry/*",
 	"*://eksisozluk.com/basliklar/*",
 	"*://eksisozluk.com/mesaj/*",
+	"*://eksisozluk.com/img/*",
 	"*://eksisozluk2023.com/",
 	"*://eksisozluk2023.com/biri/*",
 	"*://eksisozluk2023.com/entry/*",
 	"*://eksisozluk2023.com/basliklar/*",
-	"*://eksisozluk2023.com/mesaj/*"
+	"*://eksisozluk2023.com/mesaj/*",
+	"*://eksisozluk2023.com/img/*"
       ],
       "js": ["contentScript.js"]
     }
   ],
   "externally_connectable": {
-    "matches": ["https://wild-frog-7798.fly.dev/*", "http://localhost:4000/*"]
+    "matches": ["https://dert-gg-staging.fly.dev/*", "http://localhost:4000/*"]
   },
   "web_accessible_resources": [
     {
