@@ -20,7 +20,7 @@ Eklentinin çok bir fonksiyonu yok. Tamamen bir MVP diyebiliriz. Sadece Ekşi S�
 
 dert.gg üzerinden bir hesap oluşturduktan ya da dert gg'ye giriş yaptıktan sonra Chrome Runtime API ile eklenti ID'sini kullanarak eklentiye kullanıcıya ait bir JWT gönderiyoruz. Daha sonra bu JWT Chrome local storage'da tutuluyor ve bu JWT'yi kullanarak kurmuş olduğumuz WS bağlantısı üzerinden "upvote" ya da "unvote" komutları gönderiyoruz.
 
-![How the extension communicates with the backend](https://github.com/dert-gg/dert-gg-extension/how_it_works.png)
+![How the extension communicates with the backend](https://raw.githubusercontent.com/dert-gg/dert-gg-extension/main/how_it_works.png)
 
 ---
 
