@@ -24,7 +24,7 @@ const AUTHENTICATED_ICONSET = {
 Sentry.init({dsn: "<SENTRY_DSN>"})
 
 
-const WEBSOCKET_URL = "ws://localhost:4000/socket";
+const WEBSOCKET_URL = "wss://dert-gg-staging.fly.dev/socket";
 
 let jwt;
 let socket = new Socket(WEBSOCKET_URL);
@@ -35,6 +35,8 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.tabs.query({url: ['*://eksisozluk.com/*', '*://eksisozluk2023.com/*']}, (tabs) => {
     tabs.forEach(tab => chrome.tabs.reload(tab.id))
   });
+
+  chrome.tabs.create({url: "https://dert.gg"})
 });
 
 // Whenever the JWT changes we assign it to the variable instead of trying to fetch
@@ -130,6 +132,9 @@ chrome.runtime.onMessage.addListener(
 	unvote(msg.entryId, msg.topic, sendResponse);
 	break;
     }
+
+    // Return true since we use SendResponse asynchronously.
+    return true;
   }
 );
 
@@ -141,6 +146,7 @@ function upvote(entry_id, topic, sendResponse) {
   // No need to make a request if we don't have a JWT.
   if (!jwt) {
     sendResponse("unauthorized");
+    handle_unauthorized();
     return;
   }
 
@@ -156,6 +162,7 @@ function unvote(entry_id, topic, sendResponse) {
   // No need to make a request if we don't have a JWT.
   if (!jwt) {
     sendResponse("unauthorized");
+    handle_unauthorized();
     return;
   }
 
@@ -214,10 +221,5 @@ function handle_unauthorized() {
 /******************** POPUP ONCLICK LISTENER ********************/
 
 chrome.action.onClicked.addListener(() => {
-  chrome.storage.local.get("jwt", ({jwt}) => {
-    if (token)
-      chrome.tabs.create({url: "https://dert.gg"})
-    else
-      chrome.tabs.create({url: "https://dert.gg/login/new"})
-  })
+  chrome.tabs.create({url: "https://dert.gg"})
 })

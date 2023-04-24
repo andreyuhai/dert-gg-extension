@@ -28,7 +28,7 @@ function click_handler() {
       err_msg = "Bu fantastik derdi sikebilmek için önce dert.gg'ye giriş yapmalısın.";
       break;
     case 'unvote':
-      err_msg = "Sikilen dertler geri alınmaz. Önce dert";
+      err_msg = "Bu derdi sikmekten vazgeçtin anlıyoruz ama önce dert.gg'ye giriş yapmalısın.";
       break;
   }
 

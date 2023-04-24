@@ -24,7 +24,6 @@ chrome.runtime.onMessage.addListener(
   function (msg, sender, sendResponse) {
     try {
       if (msg.type == "vote_count_changed") {
-	console.log("Got the vote count changed message from backgroun")
 	let count = document.querySelector(`li[data-id="${msg.entry_id}"] .dert-gg-count`);
 
 	if (count) {
