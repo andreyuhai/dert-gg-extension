@@ -16,7 +16,7 @@ Kısaca özetlemek gerekirse Ekşi Sözlük'e hakkında sayfalarca entry girilen
 
 Eklentinin çok bir fonksiyonu yok. Tamamen bir MVP diyebiliriz. Sadece Ekşi Sözlük'teki entryleri oylamanıza imkan verir. Bu sebeple çalışma prensibi de çok karışık değil.
 
-Öncelikle eklenti ilk kurulduğunda ya da her Chrome açıldığında dert.gg ile bir WebSocket bağlantısı kurar. Bu sayede bulunduğunuz başlıklara ait entrylerin ilk oy sayılarını alırsınız.
+Öncelikle eklenti ilk kurulduğunda ya da her Chrome açıldığında dert.gg ile bir WebSocket bağlantısı kurar.
 
 dert.gg üzerinden bir hesap oluşturduktan ya da dert gg'ye giriş yaptıktan sonra Chrome Runtime API ile eklenti ID'sini kullanarak eklentiye kullanıcıya ait bir JWT gönderiyoruz. Daha sonra bu JWT Chrome local storage'da tutuluyor ve bu JWT'yi kullanarak kurmuş olduğumuz WS bağlantısı üzerinden "upvote" ya da "unvote" komutları gönderiyoruz.
 
