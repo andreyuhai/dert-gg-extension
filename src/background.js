@@ -32,9 +32,7 @@ socket.connect();
 
 chrome.runtime.onInstalled.addListener(() => {
   // Just reload all the tabs they have, because they are lazy AF ¯\_(ツ)_/¯
-  chrome.tabs.query({url: ['*://eksisozluk.com/*', '*://eksisozluk2023.com/*']}, (tabs) => {
-    tabs.forEach(tab => chrome.tabs.reload(tab.id))
-  });
+  reload_eksisozluk_tabs();
 
   chrome.tabs.create({url: "https://dert.gg"})
 });
@@ -50,9 +48,7 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
       // if it's the first time we're getting it.
       // So we can properly set whether the user's voted for any of the messages on the screen.
       if (!changes.jwt.oldValue) {
-	chrome.tabs.query({url: ['*://eksisozluk.com/*', '*://eksisozluk2023.com/*']}, (tabs) => {
-	  tabs.forEach(tab => chrome.tabs.reload(tab.id))
-	});
+	reload_eksisozluk_tabs();
       }
     }
   } catch(e) {
@@ -172,6 +168,12 @@ function unvote(entry_id, topic, sendResponse) {
     .receive("ok", () => { dispatch_successful_unvote_to_tabs(channel, entry_id) })
     .receive("unauthorized", () => { sendResponse("unauthorized"); handle_unauthorized() })
     .receive("timeout", () => { sendResponse("timeout") })
+}
+
+function reload_eksisozluk_tabs() {
+  chrome.tabs.query({url: ['*://eksisozluk.com/*', '*://eksisozluk2023.com/*']}, (tabs) => {
+    tabs.forEach(tab => chrome.tabs.reload(tab.id))
+  });
 }
 
 // Once we get an event from the web app, we need to push those events
