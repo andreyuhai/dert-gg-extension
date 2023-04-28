@@ -64,7 +64,7 @@ const common = {
       filename: '[name].css',
     }),
     new SentryWebpackPlugin({
-      org: "dert-gg",
+      org: "dertgg-prod",
       project: "dert-gg-extension",
 
       // Specify the directory containing build artifacts

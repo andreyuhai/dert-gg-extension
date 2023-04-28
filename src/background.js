@@ -24,7 +24,7 @@ const AUTHENTICATED_ICONSET = {
 Sentry.init({dsn: "<SENTRY_DSN>"})
 
 
-const WEBSOCKET_URL = "wss://dert-gg-staging.fly.dev/socket";
+const WEBSOCKET_URL = "wss://dert.gg/socket";
 
 let jwt;
 let socket = new Socket(WEBSOCKET_URL);
