@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/browser";
 
-Sentry.init({dsn: "https://3a084044227b4732a8fbe0fbdf5d18c4@o1275978.ingest.sentry.io/4505031335149568"})
+Sentry.init({dsn: "<SENTRY_DSN>"})
 
 // Get the subtopic from the URL and construct the topic(topic:subtopic)
 // Topic is constant and defined in the backend
