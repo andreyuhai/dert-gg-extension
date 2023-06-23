@@ -18,7 +18,7 @@ jobs:
 
     - name: Build & Zip Release
       id: build-pack-release
-      run: npm i
+      run: npm install --save-dev webpack
       run: echo "release_name=$(npm run repack | grep -oe 'dert-gg.*zip')" >> $GITHUB_OUTPUT
 
     - name: Upload Release
