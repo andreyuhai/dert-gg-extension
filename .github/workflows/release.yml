@@ -1,0 +1,28 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    name: Build & Zip & Upload Release
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Build & Zip Release
+      id: build-pack-release
+      run: echo "release_name=$(npm run repack | grep -oe 'dert-gg.*zip')" >> $GITHUB_OUTPUT
+
+    - name: Upload Release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: release/${{ steps.build-pack-release.outputs.release_name }}
+        tag: ${{ github.ref }}
