@@ -171,7 +171,7 @@ function unvote(entry_id, topic, sendResponse) {
 }
 
 function reload_eksisozluk_tabs() {
-  chrome.tabs.query({url: ['*://eksisozluk.com/*', '*://eksisozluk2023.com/*']}, (tabs) => {
+  chrome.tabs.query({url: ['*://eksisozluk.com/*', '*://eksisozluk1923.com/*']}, (tabs) => {
     tabs.forEach(tab => chrome.tabs.reload(tab.id))
   });
 }
@@ -181,7 +181,7 @@ function reload_eksisozluk_tabs() {
 function dispatch_event_to_tabs(payload, channel) {
   let topic_id = get_topic_id(channel);
 
-  chrome.tabs.query({url: [`*://eksisozluk2023.com/*${topic_id}*`]}, (tabs) => {
+  chrome.tabs.query({url: [`*://eksisozluk1923.com/*${topic_id}*`]}, (tabs) => {
     tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, {...payload, ...{type: 'vote_count_changed'}}));
   });
 }
@@ -189,7 +189,7 @@ function dispatch_event_to_tabs(payload, channel) {
 function dispatch_initial_votes_to_tabs(payload, channel) {
   let topic_id = get_topic_id(channel);
 
-  chrome.tabs.query({url: [`*://eksisozluk2023.com/*${topic_id}*`]}, (tabs) => {
+  chrome.tabs.query({url: [`*://eksisozluk1923.com/*${topic_id}*`]}, (tabs) => {
     tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, {type: 'set_initial_vote_counts', vote_counts: payload}));
   });
 }
@@ -197,7 +197,7 @@ function dispatch_initial_votes_to_tabs(payload, channel) {
 function dispatch_successful_upvote_to_tabs(channel, entry_id) {
   let topic_id = get_topic_id(channel);
 
-  chrome.tabs.query({url: [`*://eksisozluk2023.com/*${topic_id}*`]}, (tabs) => {
+  chrome.tabs.query({url: [`*://eksisozluk1923.com/*${topic_id}*`]}, (tabs) => {
     tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, {type: 'upvote_successful', entry_id: entry_id}));
   });
 }
@@ -205,7 +205,7 @@ function dispatch_successful_upvote_to_tabs(channel, entry_id) {
 function dispatch_successful_unvote_to_tabs(channel, entry_id) {
   let topic_id = get_topic_id(channel);
 
-  chrome.tabs.query({url: [`*://eksisozluk2023.com/*${topic_id}*`]}, (tabs) => {
+  chrome.tabs.query({url: [`*://eksisozluk1923.com/*${topic_id}*`]}, (tabs) => {
     tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, {type: 'unvote_successful', entry_id: entry_id}));
   });
 }

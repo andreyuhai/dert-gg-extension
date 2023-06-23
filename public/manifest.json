@@ -27,7 +27,7 @@
     {
       "matches": [
 	"*://eksisozluk.com/*",
-	"*://eksisozluk2023.com/*"
+	"*://eksisozluk1923.com/*"
       ],
       "exclude_matches": [
 	"*://eksisozluk.com/",
@@ -38,14 +38,14 @@
 	"*://eksisozluk.com/img/*",
 	"*://eksisozluk.com/giris/*",
 	"*://eksisozluk.com/kayit/*",
-	"*://eksisozluk2023.com/",
-	"*://eksisozluk2023.com/biri/*",
-	"*://eksisozluk2023.com/entry/*",
-	"*://eksisozluk2023.com/basliklar/*",
-	"*://eksisozluk2023.com/mesaj/*",
-	"*://eksisozluk2023.com/img/*",
-	"*://eksisozluk2023.com/giris/*",
-	"*://eksisozluk2023.com/kayit/*"
+	"*://eksisozluk1923.com/",
+	"*://eksisozluk1923.com/biri/*",
+	"*://eksisozluk1923.com/entry/*",
+	"*://eksisozluk1923.com/basliklar/*",
+	"*://eksisozluk1923.com/mesaj/*",
+	"*://eksisozluk1923.com/img/*",
+	"*://eksisozluk1923.com/giris/*",
+	"*://eksisozluk1923.com/kayit/*"
       ],
       "js": ["contentScript.js"]
     }
@@ -58,7 +58,7 @@
       "resources": ["message_handler.js"],
       "matches": [
 	"*://eksisozluk.com/*",
-	"*://eksisozluk2023.com/*"
+	"*://eksisozluk1923.com/*"
       ]
     }
   ]
