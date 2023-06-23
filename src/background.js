@@ -21,7 +21,7 @@ const AUTHENTICATED_ICONSET = {
   "512": "icons/droplet_512.png"
 };
 
-Sentry.init({dsn: "<SENTRY_DSN>"})
+Sentry.init({dsn: "https://6b9c49499321423e945d8e9dec3191aa@o4505070407254016.ingest.sentry.io/4505071082733568"})
 
 
 const WEBSOCKET_URL = "wss://dert.gg/socket";
