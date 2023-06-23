@@ -11,8 +11,8 @@ const config = (env, argv) =>
     entry: {
       message_handler: PATHS.src + '/message_handler.js',
       contentScript: [
-	PATHS.src + '/dert_gg_button.js',
-	PATHS.src + '/socket.js'
+        PATHS.src + '/dert_gg_button.js',
+        PATHS.src + '/socket.js',
       ],
       background: PATHS.src + '/background.js',
     },

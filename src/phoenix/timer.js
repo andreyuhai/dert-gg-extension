@@ -16,27 +16,27 @@
  * @param {Function} timerCalc
  */
 export default class Timer {
-  constructor(callback, timerCalc){
-    this.callback = callback
-    this.timerCalc = timerCalc
-    this.timer = null
-    this.tries = 0
+  constructor(callback, timerCalc) {
+    this.callback = callback;
+    this.timerCalc = timerCalc;
+    this.timer = null;
+    this.tries = 0;
   }
 
-  reset(){
-    this.tries = 0
-    clearTimeout(this.timer)
+  reset() {
+    this.tries = 0;
+    clearTimeout(this.timer);
   }
 
   /**
    * Cancels any previous scheduleTimeout and schedules callback
    */
-  scheduleTimeout(){
-    clearTimeout(this.timer)
+  scheduleTimeout() {
+    clearTimeout(this.timer);
 
     this.timer = setTimeout(() => {
-      this.tries = this.tries + 1
-      this.callback()
-    }, this.timerCalc(this.tries + 1))
+      this.tries = this.tries + 1;
+      this.callback();
+    }, this.timerCalc(this.tries + 1));
   }
 }

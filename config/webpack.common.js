@@ -2,7 +2,7 @@
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const SentryWebpackPlugin = require("@sentry/webpack-plugin");
+const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 
 const PATHS = require('./paths');
 
@@ -18,7 +18,7 @@ const common = {
     // the build folder to output bundles and assets in.
     path: PATHS.build,
     // the filename template for entry chunks
-    filename: '[name].js'
+    filename: '[name].js',
   },
   stats: {
     all: false,
@@ -64,16 +64,17 @@ const common = {
       filename: '[name].css',
     }),
     new SentryWebpackPlugin({
-      org: "dertgg-prod",
-      project: "dert-gg-extension",
+      org: 'dertgg-prod',
+      project: 'dert-gg-extension',
 
       // Specify the directory containing build artifacts
-      include: "./build",
+      include: './build',
       debug: true,
 
       // Auth tokens can be obtained from https://sentry.io/settings/account/api/auth-tokens/
       // and needs the `project:releases` and `org:read` scopes
-      authToken: "f1909485e780434391f56674d6d40521e575f0039b3a4893a1323c05fa9cfa67",
+      authToken:
+        'f1909485e780434391f56674d6d40521e575f0039b3a4893a1323c05fa9cfa67',
 
       // Optionally uncomment the line below to override automatic release name detection
       // release: process.env.RELEASE,

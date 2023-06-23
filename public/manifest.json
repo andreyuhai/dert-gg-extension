@@ -19,33 +19,27 @@
   "action": {
     "default_title": "dert.gg"
   },
-  "permissions": [
-    "storage",
-    "tabs"
-  ],
+  "permissions": ["storage", "tabs"],
   "content_scripts": [
     {
-      "matches": [
-	"*://eksisozluk.com/*",
-	"*://eksisozluk1923.com/*"
-      ],
+      "matches": ["*://eksisozluk.com/*", "*://eksisozluk1923.com/*"],
       "exclude_matches": [
-	"*://eksisozluk.com/",
-	"*://eksisozluk.com/biri/*",
-	"*://eksisozluk.com/entry/*",
-	"*://eksisozluk.com/basliklar/*",
-	"*://eksisozluk.com/mesaj/*",
-	"*://eksisozluk.com/img/*",
-	"*://eksisozluk.com/giris/*",
-	"*://eksisozluk.com/kayit/*",
-	"*://eksisozluk1923.com/",
-	"*://eksisozluk1923.com/biri/*",
-	"*://eksisozluk1923.com/entry/*",
-	"*://eksisozluk1923.com/basliklar/*",
-	"*://eksisozluk1923.com/mesaj/*",
-	"*://eksisozluk1923.com/img/*",
-	"*://eksisozluk1923.com/giris/*",
-	"*://eksisozluk1923.com/kayit/*"
+        "*://eksisozluk.com/",
+        "*://eksisozluk.com/biri/*",
+        "*://eksisozluk.com/entry/*",
+        "*://eksisozluk.com/basliklar/*",
+        "*://eksisozluk.com/mesaj/*",
+        "*://eksisozluk.com/img/*",
+        "*://eksisozluk.com/giris/*",
+        "*://eksisozluk.com/kayit/*",
+        "*://eksisozluk1923.com/",
+        "*://eksisozluk1923.com/biri/*",
+        "*://eksisozluk1923.com/entry/*",
+        "*://eksisozluk1923.com/basliklar/*",
+        "*://eksisozluk1923.com/mesaj/*",
+        "*://eksisozluk1923.com/img/*",
+        "*://eksisozluk1923.com/giris/*",
+        "*://eksisozluk1923.com/kayit/*"
       ],
       "js": ["contentScript.js"]
     }
@@ -56,10 +50,7 @@
   "web_accessible_resources": [
     {
       "resources": ["message_handler.js"],
-      "matches": [
-	"*://eksisozluk.com/*",
-	"*://eksisozluk1923.com/*"
-      ]
+      "matches": ["*://eksisozluk.com/*", "*://eksisozluk1923.com/*"]
     }
   ]
 }
