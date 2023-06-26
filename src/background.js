@@ -27,9 +27,7 @@ Sentry.init({
 
 const WEBSOCKET_URL = 'wss://dert.gg/socket';
 
-let jwt;
-let socket = new Socket(WEBSOCKET_URL);
-socket.connect();
+let socket;
 
 chrome.runtime.onInstalled.addListener(() => {
   // Just reload all the tabs they have, because they are lazy AF ¯\_(ツ)_/¯
@@ -38,19 +36,15 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.tabs.create({ url: 'https://dert.gg' });
 });
 
-// Whenever the JWT changes we assign it to the variable instead of trying to fetch
-// if from the storage every time we need it.
+/*
+ * Reload all eksisozluk tabs once we receive the JWT from the web app
+ * if it's the first time we're getting it.
+ * So we can properly set whether the user's voted for any of the messages on the screen.
+ */
 chrome.storage.onChanged.addListener((changes, namespace) => {
   try {
-    if (changes.jwt) {
-      jwt = changes.jwt.newValue;
-
-      // Reload all eksisozluk tabs once we receive the JWT from the web app
-      // if it's the first time we're getting it.
-      // So we can properly set whether the user's voted for any of the messages on the screen.
-      if (!changes.jwt.oldValue) {
-        reload_eksisozluk_tabs();
-      }
+    if (!changes.jwt?.oldValue) {
+      reload_eksisozluk_tabs();
     }
   } catch (e) {
     Sentry.captureException(e);
@@ -66,7 +60,6 @@ chrome.runtime.onStartup.addListener(() => {
   chrome.storage.local.get('jwt', (result) => {
     try {
       if (result.jwt) {
-        jwt = result.jwt;
         chrome.action.setIcon({ path: AUTHENTICATED_ICONSET });
       }
     } catch (e) {
@@ -93,18 +86,28 @@ chrome.runtime.onMessageExternal.addListener(function (
 });
 
 // Handle join and leave requests for channels
-chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(async function (msg, sender, sendResponse) {
   switch (msg.type) {
     case 'join':
-      let channel = socket.channel(msg.topic, { jwt: jwt });
+      // Make sure there's socket connection first.
+      if (!socket || !socket.isConnected()) {
+        console.debug("Connecting to the socket for the first time.");
+
+        socket = new Socket(WEBSOCKET_URL);
+        socket.connect();
+      };
+
+      let storage = await chrome.storage.local.get('jwt');
+      let channel = socket.channel(msg.topic, { jwt: storage.jwt });
 
       channel
         .join()
         .receive('ok', (resp) => {
+          console.log(`Joined channel ${msg.topic}.`, resp);
           dispatch_initial_votes_to_tabs(resp, channel);
         })
         .receive('error', (resp) => {
-          console.log('Unable to join', resp);
+          console.log(`Unable to join channel ${msg.topic}.`, resp);
         });
 
       channel.on('vote_count_changed', (payload) =>
@@ -113,14 +116,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
       break;
 
     case 'leave':
-      find_channel(msg.topic)
-        ?.leave()
-        .receive('ok', (resp) => {
-          console.log('Left successfully', resp);
-        })
-        .receive('error', (resp) => {
-          console.log('Unable to leave', resp);
-        });
+      socket?.leaveOpenTopic(msg.topic);
       break;
   }
 
@@ -146,12 +142,20 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
 });
 
 function find_channel(topic) {
-  return socket.channels.find((channel) => channel.topic == topic);
+  // We need to check whether there's already a socket.
+  if (socket) {
+    return socket.channels.find((channel) => channel.topic == topic);
+  }
 }
 
-function upvote(entry_id, topic, sendResponse) {
-  // No need to make a request if we don't have a JWT.
-  if (!jwt) {
+async function upvote(entry_id, topic, sendResponse) {
+  console.debug(`Trying to upvote entry #${entry_id} in ${topic}.`)
+
+  let storage =  await chrome.storage.local.get('jwt');
+
+  if (!storage.jwt) {
+    console.debug("JWT doesn't exist in local storage.")
+
     sendResponse('unauthorized');
     handle_unauthorized();
     return;
@@ -160,8 +164,9 @@ function upvote(entry_id, topic, sendResponse) {
   let channel = find_channel(topic);
 
   channel
-    ?.push('upvote', { entry_id: entry_id, jwt: jwt })
+    ?.push('upvote', { entry_id: entry_id, jwt: storage.jwt })
     .receive('ok', () => {
+      console.debug(`Successfully upvoted entry #${entry_id} in ${topic}.`)
       dispatch_successful_upvote_to_tabs(channel, entry_id);
     })
     .receive('unauthorized', () => {
@@ -173,9 +178,14 @@ function upvote(entry_id, topic, sendResponse) {
     });
 }
 
-function unvote(entry_id, topic, sendResponse) {
-  // No need to make a request if we don't have a JWT.
-  if (!jwt) {
+async function unvote(entry_id, topic, sendResponse) {
+  console.debug(`Trying to upvote entry #${entry_id} in ${topic}.`)
+
+  let storage =  await chrome.storage.local.get('jwt');
+
+  if (!storage.jwt) {
+    console.debug("JWT doesn't exist in local storage.")
+
     sendResponse('unauthorized');
     handle_unauthorized();
     return;
@@ -184,8 +194,9 @@ function unvote(entry_id, topic, sendResponse) {
   let channel = find_channel(topic);
 
   channel
-    ?.push('unvote', { entry_id: entry_id, jwt: jwt })
+    ?.push('unvote', { entry_id: entry_id, jwt: storage.jwt })
     .receive('ok', () => {
+      console.debug(`Successfully unvoted entry #${entry_id} in ${topic}.`)
       dispatch_successful_unvote_to_tabs(channel, entry_id);
     })
     .receive('unauthorized', () => {
@@ -278,7 +289,6 @@ function get_topic_id(channel) {
 
 // When we know that the user actually is unauthorized
 function handle_unauthorized() {
-  jwt = undefined;
   chrome.action.setIcon({ path: UNAUTHENTICATED_ICONSET });
 }
 
