@@ -68,6 +68,7 @@ function create_dert_gg_button() {
   button.classList.add('favorite-count');
   button.classList.add('dert-gg-button');
   button.setAttribute('data-action', 'upvote');
+  button.style.userSelect = 'none';
   button.innerHTML = 'derdini sikeyim';
 
   button.addEventListener('click', click_handler);
@@ -80,6 +81,7 @@ function create_dert_gg_count() {
 
   count.innerHTML = '(0)';
   count.style.verticalAlign = 'middle';
+  count.style.userSelect = 'none';
   count.classList.add('dert-gg-count');
 
   return count;
