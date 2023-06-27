@@ -44,6 +44,8 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.storage.onChanged.addListener((changes, namespace) => {
   try {
     if (!changes.jwt?.oldValue) {
+      console.debug("Setting the JWT for the first time.");
+
       reload_eksisozluk_tabs();
     }
   } catch (e) {
@@ -51,11 +53,7 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
   }
 });
 
-/*
- * This is so that on startup we fetch the JWT and set it.
- * Otherwise JWT would be undefined, until we get & set a new one.
- * Regarding the icon change,  we're just assuming the JWT always comes from the app.
- */
+// We assume on startup that if they've got a JWT in local storage, they're logged in.
 chrome.runtime.onStartup.addListener(() => {
   chrome.storage.local.get('jwt', (result) => {
     try {
@@ -170,16 +168,18 @@ async function upvote(entry_id, topic, sendResponse) {
       dispatch_successful_upvote_to_tabs(channel, entry_id);
     })
     .receive('unauthorized', () => {
+      console.debug("Unauthorized to upvote.");
       sendResponse('unauthorized');
       handle_unauthorized();
     })
     .receive('timeout', () => {
+      console.debug("Unvote request timed out.");
       sendResponse('timeout');
     });
 }
 
 async function unvote(entry_id, topic, sendResponse) {
-  console.debug(`Trying to upvote entry #${entry_id} in ${topic}.`)
+  console.debug(`Trying to unvote entry #${entry_id} in ${topic}.`)
 
   let storage =  await chrome.storage.local.get('jwt');
 
@@ -200,10 +200,12 @@ async function unvote(entry_id, topic, sendResponse) {
       dispatch_successful_unvote_to_tabs(channel, entry_id);
     })
     .receive('unauthorized', () => {
+      console.debug("Unauthorized to unvote.");
       sendResponse('unauthorized');
       handle_unauthorized();
     })
     .receive('timeout', () => {
+      console.debug("Unvote request timed out.");
       sendResponse('timeout');
     });
 }
@@ -289,6 +291,7 @@ function get_topic_id(channel) {
 
 // When we know that the user actually is unauthorized
 function handle_unauthorized() {
+  chrome.storage.local.remove('jwt');
   chrome.action.setIcon({ path: UNAUTHENTICATED_ICONSET });
 }
 
