@@ -30,6 +30,16 @@ const WEBSOCKET_URL = 'wss://dert.gg/socket';
 let socket;
 
 chrome.runtime.onInstalled.addListener(() => {
+  chrome.storage.local.get('jwt', ({jwt}) => {
+    try {
+      if (jwt) {
+        chrome.action.setIcon({ path: AUTHENTICATED_ICONSET });
+      }
+    } catch (e) {
+      Sentry.captureException(e);
+    }
+  });
+
   // Just reload all the tabs they have, because they are lazy AF ¯\_(ツ)_/¯
   reload_eksisozluk_tabs();
 
