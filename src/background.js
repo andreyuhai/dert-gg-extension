@@ -97,16 +97,14 @@ chrome.runtime.onMessageExternal.addListener(function (
 chrome.runtime.onMessage.addListener(async function (msg, sender, sendResponse) {
   switch (msg.type) {
     case 'join':
-      // Make sure there's socket connection first.
-      if (!socket || !socket.isConnected()) {
-        console.debug("Connecting to the socket for the first time.");
-
-        socket = new Socket(WEBSOCKET_URL);
-        socket.connect();
-      };
+      make_sure_socket_connected();
 
       let storage = await chrome.storage.local.get('jwt');
       let channel = socket.channel(msg.topic, { jwt: storage.jwt });
+
+      channel.onError((reason) => {
+        Sentry.captureMessage("Channel error.", {extra: {reason: reason, socket: socket}});
+      });
 
       channel
         .join()
@@ -138,9 +136,11 @@ chrome.runtime.onMessage.addListener(async function (msg, sender, sendResponse) 
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   switch (msg.type) {
     case 'upvote':
+      make_sure_socket_connected();
       upvote(msg.entryId, msg.topic, sendResponse);
       break;
     case 'unvote':
+      make_sure_socket_connected();
       unvote(msg.entryId, msg.topic, sendResponse);
       break;
   }
@@ -303,6 +303,25 @@ function get_topic_id(channel) {
 function handle_unauthorized() {
   chrome.storage.local.remove('jwt');
   chrome.action.setIcon({ path: UNAUTHENTICATED_ICONSET });
+}
+
+function make_sure_socket_connected() {
+  if (!socket) {
+    console.debug("Establishing socket connection for the first time.");
+
+    socket = new Socket(WEBSOCKET_URL);
+
+    socket.onError((reason) => {
+      Sentry.captureMessage("Socket error.", {extra: {reason: reason, socket: socket}});
+    });
+
+    socket.connect();
+  } else if (!socket.isConnected()) {
+    console.debug("Re-establishing socket connection.");
+
+    socket.conn = null;
+    socket.connect();
+  }
 }
 
 /******************** POPUP ONCLICK LISTENER ********************/
