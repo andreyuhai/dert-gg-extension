@@ -309,7 +309,7 @@ function make_sure_socket_connected() {
   }
 }
 
-function join_channel(topic) {
+async function join_channel(topic) {
   console.debug(`Joining channel ${topic}.`);
 
   let channel = find_channel(topic);
