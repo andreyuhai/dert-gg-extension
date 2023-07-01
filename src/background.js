@@ -30,7 +30,7 @@ const WEBSOCKET_URL = 'wss://dert.gg/socket';
 let socket;
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.get('jwt', ({jwt}) => {
+  chrome.storage.local.get('jwt', ({ jwt }) => {
     try {
       if (jwt) {
         chrome.action.setIcon({ path: AUTHENTICATED_ICONSET });
@@ -54,7 +54,7 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.storage.onChanged.addListener((changes, namespace) => {
   try {
     if (!changes.jwt?.oldValue) {
-      console.debug("Setting the JWT for the first time.");
+      console.debug('Setting the JWT for the first time.');
 
       reload_eksisozluk_tabs();
     }
@@ -94,31 +94,11 @@ chrome.runtime.onMessageExternal.addListener(function (
 });
 
 // Handle join and leave requests for channels
-chrome.runtime.onMessage.addListener(async function (msg, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   switch (msg.type) {
     case 'join':
       make_sure_socket_connected();
-
-      let storage = await chrome.storage.local.get('jwt');
-      let channel = socket.channel(msg.topic, { jwt: storage.jwt });
-
-      channel.onError((reason) => {
-        Sentry.captureMessage("Channel error.", {extra: {reason: reason, socket: socket}});
-      });
-
-      channel
-        .join()
-        .receive('ok', (resp) => {
-          console.log(`Joined channel ${msg.topic}.`, resp);
-          dispatch_initial_votes_to_tabs(resp, channel);
-        })
-        .receive('error', (resp) => {
-          console.log(`Unable to join channel ${msg.topic}.`, resp);
-        });
-
-      channel.on('vote_count_changed', (payload) =>
-        dispatch_event_to_tabs(payload, channel)
-      );
+      join_channel(msg.topic);
       break;
 
     case 'leave':
@@ -137,10 +117,12 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   switch (msg.type) {
     case 'upvote':
       make_sure_socket_connected();
+      join_channel(msg.topic);
       upvote(msg.entryId, msg.topic, sendResponse);
       break;
     case 'unvote':
       make_sure_socket_connected();
+      join_channel(msg.topic);
       unvote(msg.entryId, msg.topic, sendResponse);
       break;
   }
@@ -157,12 +139,12 @@ function find_channel(topic) {
 }
 
 async function upvote(entry_id, topic, sendResponse) {
-  console.debug(`Trying to upvote entry #${entry_id} in ${topic}.`)
+  console.debug(`Trying to upvote entry #${entry_id} in ${topic}.`);
 
-  let storage =  await chrome.storage.local.get('jwt');
+  let storage = await chrome.storage.local.get('jwt');
 
   if (!storage.jwt) {
-    console.debug("JWT doesn't exist in local storage.")
+    console.debug("JWT doesn't exist in local storage.");
 
     sendResponse('unauthorized');
     handle_unauthorized();
@@ -174,27 +156,27 @@ async function upvote(entry_id, topic, sendResponse) {
   channel
     ?.push('upvote', { entry_id: entry_id, jwt: storage.jwt })
     .receive('ok', () => {
-      console.debug(`Successfully upvoted entry #${entry_id} in ${topic}.`)
+      console.debug(`Successfully upvoted entry #${entry_id} in ${topic}.`);
       dispatch_successful_upvote_to_tabs(channel, entry_id);
     })
     .receive('unauthorized', () => {
-      console.debug("Unauthorized to upvote.");
+      console.debug('Unauthorized to upvote.');
       sendResponse('unauthorized');
       handle_unauthorized();
     })
     .receive('timeout', () => {
-      console.debug("Unvote request timed out.");
+      console.debug('Upvote request timed out.');
       sendResponse('timeout');
     });
 }
 
 async function unvote(entry_id, topic, sendResponse) {
-  console.debug(`Trying to unvote entry #${entry_id} in ${topic}.`)
+  console.debug(`Trying to unvote entry #${entry_id} in ${topic}.`);
 
-  let storage =  await chrome.storage.local.get('jwt');
+  let storage = await chrome.storage.local.get('jwt');
 
   if (!storage.jwt) {
-    console.debug("JWT doesn't exist in local storage.")
+    console.debug("JWT doesn't exist in local storage.");
 
     sendResponse('unauthorized');
     handle_unauthorized();
@@ -206,16 +188,16 @@ async function unvote(entry_id, topic, sendResponse) {
   channel
     ?.push('unvote', { entry_id: entry_id, jwt: storage.jwt })
     .receive('ok', () => {
-      console.debug(`Successfully unvoted entry #${entry_id} in ${topic}.`)
+      console.debug(`Successfully unvoted entry #${entry_id} in ${topic}.`);
       dispatch_successful_unvote_to_tabs(channel, entry_id);
     })
     .receive('unauthorized', () => {
-      console.debug("Unauthorized to unvote.");
+      console.debug('Unauthorized to unvote.');
       sendResponse('unauthorized');
       handle_unauthorized();
     })
     .receive('timeout', () => {
-      console.debug("Unvote request timed out.");
+      console.debug('Unvote request timed out.');
       sendResponse('timeout');
     });
 }
@@ -307,21 +289,58 @@ function handle_unauthorized() {
 
 function make_sure_socket_connected() {
   if (!socket) {
-    console.debug("Establishing socket connection for the first time.");
+    console.debug('Establishing socket connection for the first time.');
 
     socket = new Socket(WEBSOCKET_URL);
+    socket.connect();
 
     socket.onError((reason) => {
-      Sentry.captureMessage("Socket error.", {extra: {reason: reason, socket: socket}});
+      Sentry.captureMessage('Socket error.', {
+        extra: { reason: reason, socket: socket },
+      });
     });
-
-    socket.connect();
   } else if (!socket.isConnected()) {
-    console.debug("Re-establishing socket connection.");
+    console.debug('Re-establishing socket connection.');
 
     socket.conn = null;
     socket.connect();
+  } else {
+    console.debug('Socket connection is already established.');
   }
+}
+
+function join_channel(topic) {
+  console.debug(`Joining channel ${topic}.`);
+
+  let channel = find_channel(topic);
+
+  if (channel && ['joined', 'joining'].includes(channel.state)) {
+    console.debug(`Channel ${channel.topic} already joined.`);
+    return;
+  }
+
+  let storage = await chrome.storage.local.get('jwt');
+  channel = socket.channel(topic, { jwt: storage.jwt });
+
+  channel
+    .join()
+    .receive('ok', (resp) => {
+      console.log(`Joined channel ${topic}.`, resp);
+      dispatch_initial_votes_to_tabs(resp, channel);
+    })
+    .receive('error', (resp) => {
+      console.log(`Unable to join channel ${topic}.`, resp);
+    });
+
+  channel.on('vote_count_changed', (payload) =>
+    dispatch_event_to_tabs(payload, channel)
+  );
+
+  channel.onError((reason) => {
+    Sentry.captureMessage('Channel error.', {
+      extra: { reason: reason, socket: socket },
+    });
+  });
 }
 
 /******************** POPUP ONCLICK LISTENER ********************/
