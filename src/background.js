@@ -99,6 +99,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     case 'join':
       make_sure_socket_connected();
       join_channel(msg.topic);
+      join_all_channels_except(msg.topic);
       break;
 
     case 'leave':
@@ -118,11 +119,13 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     case 'upvote':
       make_sure_socket_connected();
       join_channel(msg.topic);
+      join_all_channels_except(msg.topic);
       upvote(msg.entryId, msg.topic, sendResponse);
       break;
     case 'unvote':
       make_sure_socket_connected();
       join_channel(msg.topic);
+      join_all_channels_except(msg.topic);
       unvote(msg.entryId, msg.topic, sendResponse);
       break;
   }
@@ -341,6 +344,30 @@ async function join_channel(topic) {
       extra: { reason: reason, socket: socket },
     });
   });
+}
+
+function join_all_channels_except(topic_to_exclude) {
+  chrome.tabs.query(
+    { url: ['*://eksisozluk.com/*', '*://eksisozluk1923.com/*'] },
+    (tabs) => {
+      let topics = topics_from_tabs(tabs);
+      topics = topics.filter((topic) => topic !== topic_to_exclude);
+      console.debug('Topics to join:', topics);
+
+      topics.forEach((topic) => join_channel(topic));
+    }
+  );
+}
+
+function topics_from_tabs(tabs) {
+  let urls = tabs.map((tab) => tab.url);
+  let topic_urls = urls.filter((url) => url.match(/--\d+/));
+  let topics = topic_urls.map((url) => url.match(/--(\d+)/)[1]);
+
+  topics = [...new Set(topics)];
+  topics = topics.map((topic) => `room:${topic}`);
+
+  return topics;
 }
 
 /******************** POPUP ONCLICK LISTENER ********************/
