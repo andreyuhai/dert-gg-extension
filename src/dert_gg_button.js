@@ -48,7 +48,7 @@ function click_handler() {
         } else if (resp == 'timeout') {
           // in case there's a problem on the server side and we timeout
           notify(
-            'Hiçbir şey olmamış ise kesinlikle bir şeyler oldu. Yakında hallederiz.',
+            'Hiçbir şey olmamış ise kesinlikle bir şeyler oldu. Yakında hallederiz. Sen şimdilik sayfayı yenile.',
             'error'
           );
         }
